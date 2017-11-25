@@ -4,7 +4,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
+import com.google.gson.Gson;
 import com.ulfric.acrodb.Bucket;
+import com.ulfric.acrodb.Context;
+import com.ulfric.acrodb.json.gson.GsonProducer;
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.application.Container;
 import com.ulfric.dragoon.extension.inject.Inject;
@@ -26,7 +29,11 @@ public class AcrodbContainer extends Container {
 	}
 
 	private void bindAcrodb() {
-		acrodb = new Bucket();
+		Context context = Context.builder()
+				.setJsonProducer(new GsonProducer(factory.request(Gson.class)))
+				.build();
+		acrodb = new Bucket(context);
+
 		factory.bind(Bucket.class).toFunction(parameters -> {
 			Qualifier qualifier = parameters.getQualifier();
 			if (qualifier != null) {
