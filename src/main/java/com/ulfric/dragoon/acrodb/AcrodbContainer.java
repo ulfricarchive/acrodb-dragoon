@@ -1,5 +1,7 @@
 package com.ulfric.dragoon.acrodb;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 import com.ulfric.acrodb.Bucket;
@@ -7,6 +9,7 @@ import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.application.Container;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.qualifier.Qualifier;
+import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.stereotype.Stereotypes;
 
 public class AcrodbContainer extends Container {
@@ -44,13 +47,25 @@ public class AcrodbContainer extends Container {
 			Qualifier qualifier = parameters.getQualifier();
 			Objects.requireNonNull(qualifier, "qualifier");
 
-			@SuppressWarnings("unchecked")
-			Class<? extends Document> type = (Class<? extends Document>) qualifier.getType();
+			Type store = qualifier.getType();
+			Class<? extends Document> type = getStoreType(store);
 
 			Bucket bucket = factory.request(Bucket.class, parameters);
 
 			return new Store<>(bucket, type);
 		});
+	}
+
+	private Class<? extends Document> getStoreType(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type[] arguments = parameterizedType.getActualTypeArguments();
+			if (arguments.length > 0) {
+				return Classes.getRawType(arguments[0]).asSubclass(Document.class);
+			}
+		}
+
+		throw new IllegalStateException("Could not find store type from " + type);
 	}
 
 	private void unbindAcrodb() {
