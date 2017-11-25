@@ -17,13 +17,16 @@ public class AcrodbContainer extends Container {
 	@Inject
 	private ObjectFactory factory;
 
+	private Bucket acrodb;
+
 	public AcrodbContainer() {
 		addBootHook(this::bindAcrodb);
 		addShutdownHook(this::unbindAcrodb);
+		addShutdownHook(this::saveAcrodb);
 	}
 
 	private void bindAcrodb() {
-		Bucket acrodb = new Bucket();
+		acrodb = new Bucket();
 		factory.bind(Bucket.class).toFunction(parameters -> {
 			Qualifier qualifier = parameters.getQualifier();
 			if (qualifier != null) {
@@ -71,6 +74,10 @@ public class AcrodbContainer extends Container {
 	private void unbindAcrodb() {
 		factory.bind(Bucket.class).toNothing();
 		factory.bind(Store.class).toNothing();
+	}
+
+	private void saveAcrodb() {
+		acrodb.save();
 	}
 
 }
