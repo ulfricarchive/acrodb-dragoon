@@ -3,6 +3,7 @@ package com.ulfric.dragoon.acrodb;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import com.ulfric.acrodb.Bucket;
 import com.ulfric.acrodb.DocumentStore;
@@ -48,6 +49,11 @@ public final class Store<T extends Document> implements DocumentStore {
 		openDocument(key(document.getIdentifier())).write(document);
 	}
 
+	public Stream<T> getAllDocuments() {
+		return bucket.loadAllDocuments()
+				.map(document -> document.read(type));
+	}
+
 	@Override
 	public com.ulfric.acrodb.Document openDocument(String name) {
 		return bucket.openDocument(name);
@@ -56,6 +62,16 @@ public final class Store<T extends Document> implements DocumentStore {
 	private String key(Object key) {
 		Objects.requireNonNull(key, "key");
 		return key.toString();
+	}
+
+	@Override
+	public void deleteDocument(String name) {
+		bucket.deleteDocument(name);
+	}
+
+	@Override
+	public Stream<com.ulfric.acrodb.Document> loadAllDocuments() {
+		return bucket.loadAllDocuments();
 	}
 
 }
