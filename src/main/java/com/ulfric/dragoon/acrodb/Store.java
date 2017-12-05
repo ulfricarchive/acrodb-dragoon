@@ -23,7 +23,7 @@ public final class Store<T extends Document> implements DocumentStore {
 	}
 
 	@Asynchronous
-	public CompletableFuture<T> getAsynchronous(Object key) {
+	public CompletableFuture<T> getAsynchronous(String key) {
 		return CompletableFuture.completedFuture(get(key));
 	}
 
@@ -33,7 +33,7 @@ public final class Store<T extends Document> implements DocumentStore {
 		return CompletableFuture.completedFuture(null);
 	}
 
-	public T get(Object key) {
+	public T get(String key) {
 		T document = openDocument(key(key)).read(type);
 		if (document.getIdentifier() == null) {
 			document.setIdentifier(key);

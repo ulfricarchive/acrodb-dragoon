@@ -2,13 +2,13 @@ package com.ulfric.dragoon.acrodb;
 
 public class Document {
 
-	private Object identifier;
+	private String identifier;
 
-	public Object getIdentifier() {
+	public String getIdentifier() {
 		return identifier;
 	}
 
-	public void setIdentifier(Object identifier) {
+	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
 
