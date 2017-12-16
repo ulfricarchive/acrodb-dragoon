@@ -3,6 +3,7 @@ package com.ulfric.dragoon.acrodb;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.ulfric.acrodb.Bucket;
@@ -42,7 +43,11 @@ public final class Store<T extends Document> implements DocumentStore {
 	}
 
 	public void edit(Object key, Consumer<T> consumer) {
-		openDocument(key(key)).edit(type, consumer);
+		openDocument(key(key)).editAndWrite(type, consumer);
+	}
+
+	public boolean edit(Object key, Predicate<T> consumer) {
+		return openDocument(key(key)).editAndWriteIf(type, consumer);
 	}
 
 	public void persist(T document) {
