@@ -42,11 +42,11 @@ public final class Store<T extends Document> implements DocumentStore {
 		return document;
 	}
 
-	public void edit(Object key, Consumer<T> consumer) {
+	public void editAndWrite(Object key, Consumer<T> consumer) {
 		openDocument(key(key)).editAndWrite(type, consumer);
 	}
 
-	public boolean edit(Object key, Predicate<T> consumer) {
+	public boolean editAndWriteIf(Object key, Predicate<T> consumer) {
 		return openDocument(key(key)).editAndWriteIf(type, consumer);
 	}
 
